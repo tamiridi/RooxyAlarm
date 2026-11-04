@@ -231,8 +231,13 @@ const ALARMS = {
 };
 
 const q = new URLSearchParams(location.search);
-const pick = (location.hash || "").slice(1) || q.get("a");
+/* "-omg" variation (#granny-omg, #dog-omg, #boss-omg): same alarm, but it rings with the OMG sound */
+const raw = (location.hash || "").slice(1) || q.get("a") || "";
+const omg = /-omg$/.test(raw);
+const pick = raw.replace(/-omg$/, "");
 const A = ALARMS[pick] || ALARMS.granny;
+const ringFile = omg ? new Audio("omg.mp3") : null;
+if (ringFile){ ringFile.loop = true; ringFile.preload = "auto"; }
 addEventListener("hashchange", () => location.reload());
 const $ = s => document.querySelector(s);
 const app = $("#app");
@@ -257,7 +262,9 @@ const clockTxt = () => { const d = new Date(); let h = d.getHours() % 12 || 12; 
 /* alarm sound (classic iPhone-like beep pattern), starts on the first touch: browsers block sound before that */
 let ctx = null, beepTimer = null;
 function startAlarmSound(){
-  if (q.get("sound") === "0" || beepTimer) return;
+  if (q.get("sound") === "0") return;
+  if (ringFile){ try{ ringFile.currentTime = 0; ringFile.play().catch(()=>{}); }catch(e){} if (navigator.vibrate) navigator.vibrate([300,200,300]); return; }
+  if (beepTimer) return;
   try{
     ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
     ctx.resume();
@@ -276,7 +283,7 @@ function startAlarmSound(){
     burst(); beepTimer = setInterval(burst, 1000);
   }catch(e){}
 }
-function stopAlarmSound(){ clearInterval(beepTimer); beepTimer = null; if (navigator.vibrate) navigator.vibrate(0); }
+function stopAlarmSound(){ if (ringFile) ringFile.pause(); clearInterval(beepTimer); beepTimer = null; if (navigator.vibrate) navigator.vibrate(0); }
 $("#ring").addEventListener("pointerdown", e => { if (!e.target.closest("button")) startAlarmSound(); });
 
 /* scale the big art so everything fits on short screens (Safari with toolbars) */
