@@ -89,7 +89,7 @@ button{font:inherit;color:inherit;border:0;cursor:pointer}
 @keyframes tick{0%,100%{opacity:.95}50%{opacity:.35}}
 
 .title{text-align:center;padding:0 20px;position:relative}
-.title h1{margin:0;font-size:41px;font-weight:800;letter-spacing:-.025em;line-height:1.05;color:#0f0f0f}
+.title h1{margin:0;font-size:41px;font-weight:800;letter-spacing:-.025em;line-height:1.05;color:#0f0f0f;text-wrap:balance}
 .title p{margin:10px 0 0;font-size:19px;color:var(--muted)}
 
 .actions{position:relative;margin:16px 24px calc(var(--bot) + 26px);display:flex;flex-direction:column;align-items:center;gap:30px;z-index:6}
@@ -123,6 +123,7 @@ button{font:inherit;color:inherit;border:0;cursor:pointer}
 @keyframes eq{from{height:6px}to{height:30px}}
 
 #file{display:none}
+.title h1.long{font-size:33px}
 @media (prefers-reduced-motion:reduce){.clock,.h2,.ph .face,.done .art img,.cloud{animation:none!important}}
 </style>
 </head>
@@ -169,7 +170,7 @@ button{font:inherit;color:inherit;border:0;cursor:pointer}
       </svg>
     </div>
 
-    <div class="title"><h1 id="alarmTitle">Granny's Pie</h1><p id="alarmSub">Time to wake up!</p></div>
+    <div class="title"><h1 id="alarmTitle">Granny's Pill 💊</h1><p id="alarmSub">Time to wake up!</p></div>
     </div>
 
     <div class="actions">
@@ -218,14 +219,14 @@ button{font:inherit;color:inherit;border:0;cursor:pointer}
    video: path or URL of the clip that plays after Snooze / Start Challenge.
    Leave it empty to show the animated placeholder. ?video=<url> overrides it. */
 const ALARMS = {
-  granny:{ title:"Granny's Pie",  sub:"Time to wake up!", face:"👵", video:"granny.mp4",
+  granny:{ title:"Granny's Pill 💊",  sub:"Time to wake up!", face:"👵", video:"granny.mp4",
            cap:"WHY didn't you give me my <b>pill</b>?! Do you want me to DIE?!",
            done:"Granny got her pill. Have a great day!" },
   dog:   { title:"Max's Breakfast", sub:"Time to wake up!", face:"🐶", video:"dog.mp4",
            cap:"bro I haven't eaten since <b>yesterday</b>. GET UP.",
            done:"Max got his breakfast. Have a great day!" },
-  boss:  { title:"9:00 Meeting",  sub:"Time to wake up!", face:"👔", video:"boss.mp4",
-           cap:"you snoozed 4 times. <b>you're fired.</b> good morning.",
+  boss:  { title:"9:00 am meeting with Boss",  sub:"Time to wake up!", face:"👔", video:"boss.mp4",
+           cap:"Get up, <b>loser</b>. Just so you know, my fav is the Big Mac.",
            done:"You still have a job. Have a great day!" }
 };
 
@@ -239,6 +240,7 @@ if (q.get("t")) A.title = q.get("t");
 let videoSrc = q.get("video") || A.video;
 
 $("#alarmTitle").textContent = A.title;
+if (A.title.length > 18) $("#alarmTitle").classList.add("long");
 $("#alarmSub").textContent = A.sub;
 $("#phFace").textContent = A.face;
 $("#phCap").innerHTML = A.cap;
